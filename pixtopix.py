@@ -15,8 +15,8 @@ import collections
 
 BUFFER_SIZE = 50
 BATCH_SIZE = 1
-IMG_WIDTH = 128
-IMG_HEIGHT = 128
+IMG_WIDTH = 512
+IMG_HEIGHT = 512
 OUTPUT_CHANNELS = 1
 LAMBDA = 100
 CURRENT_EPOCH=0;    #Set this if training stops in between.
@@ -310,7 +310,7 @@ def normalize(input_image, real_image):
 def random_crop(input_image, real_image):
   stacked_image = tf.stack([input_image, real_image], axis=0)
   cropped_image = tf.image.random_crop(
-      stacked_image, size=[2, IMG_HEIGHT, IMG_WIDTH, 3])
+      stacked_image, size=[2, IMG_HEIGHT, IMG_WIDTH, 1])
 
   return cropped_image[0], cropped_image[1]
  
@@ -421,7 +421,7 @@ def upsample(filters, size, apply_dropout=False):
   
   
 def Generator():
-  inputs = tf.keras.layers.Input(shape=[512,512,3])
+  inputs = tf.keras.layers.Input(shape=[512,512,1])
 
   down_stack = [
     downsample(64, 4, apply_batchnorm=False), # (bs, 128, 128, 64)
@@ -495,8 +495,8 @@ def generator_loss(disc_generated_output, gen_output, target):
 def Discriminator():
   initializer = tf.random_normal_initializer(0., 0.02)
 
-  inp = tf.keras.layers.Input(shape=[512, 512, 3], name='input_image')
-  tar = tf.keras.layers.Input(shape=[512, 512, 3], name='target_image')
+  inp = tf.keras.layers.Input(shape=[512, 512, 1], name='input_image')
+  tar = tf.keras.layers.Input(shape=[512, 512, 1], name='target_image')
 
   x = tf.keras.layers.concatenate([inp, tar]) # (bs, 256, 256, channels*2)
 
